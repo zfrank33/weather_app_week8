@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <style>
+
+body {font-family: Arial, Helvetica, sans-serif;}
+* {box-sizing: border-box;}
+
+input[type=text], select, textarea {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  resize: vertical;
+}
+
+
+
+.container {
+  border-radius: 5px;
+  background-color: #f2f2f2;
+  padding: 20px;
+}
+
+
+
+
+        #weather {
+          font-family: Arial, Helvetica, sans-serif;
+          border-collapse: collapse;
+          width: 100%;
+        }
+        
+        #weather td, #weather th {
+          border: 1px solid #ddd;
+          padding: 8px;
+        }
+        
+        #weather tr:nth-child(even){background-color: #f2f2f2;}
+        
+        #weather tr:hover {background-color: #ddd;}
+        
+        #weather th {
+          padding-top: 12px;
+          padding-bottom: 12px;
+          text-align: left;
+          background-color: #04AA6D;
+          color: white;
+        }
+
+
+
+         #submitDet, #getLoc {
+  color: white;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+#submitDet {
+    background-color: #04AA6D;
+
+}
+#getLoc {
+    background-color: #020c09;
+
+}
+  #submitDet:hover {
+  background-color: #45a049;
+}
+        </style>
+  </head>
+  <body>
+    <div class="container">
+    <h4 id ="dateTimeH">
+        Clock 
+    </h4>
+        <form id="seasonData">
+            <label for="fname">Latitude</label>
+            <input type="text" id="latId" name="latitude" placeholder="Enter latitude...">
+        
+            <label for="lname">Longitude</label>
+            <input type="text" id="lonId" name="longitude" placeholder="Enter longitude...">
+            <input type="button" id="submitDet" value="Submit">
+        </form>
+        <input type="button" id="getLoc" value="Get Location">
+
+    </div>
+    <h1> Fetched Detail</h1>
+
+<table id="weather">
+  <tr>
+    <th>Location</th>
+    <th>High in Fahrenheit</th>
+    <th>High Kelvin</th>
+    <th>Low Kelvin</th>
+    <th>Low in Fahrenheit</th>
+    <th>Forecast </th>
+    <th></th>
+    <th>Humidity</th>
+  </tr>
+ 
+  
+</table>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js">
+    </script>
+    <script>
+ const  showPositionWeather= (position)=> {
+    req_1(position.coords.latitude,position.coords.longitude)
+//   x.innerHTML = "Latitude: " + position.coords.latitude + 
+//   "<br>Longitude: " + position.coords.longitude;
+}
+const  temperatureConverter=(valNum) =>{
+  valNum = parseFloat(valNum);
+  let conVal=((valNum-273.15)*1.8)+32;
+  return conVal
+}
+const req_1 = async (latitude,longitude) => {
+    // const response = await axios.get('https://api.openweathermap.org/data/2.5/weather?lat=-1.167240&lon=36.825500&appid=bb13cadfa9be702a8626e7dcf1cb5313')  
+    const response = await axios.get('https://api.openweathermap.org/data/2.5/weather?lat='+latitude+'&lon='+longitude+'&appid=bb13cadfa9be702a8626e7dcf1cb5313')  
+    
+    let  table = document.getElementById("weather");
+    
+
+// to create an image element, use document.createElement(element)
+    const img = document.createElement("img");
+
+
+    console.log(response);
+    obj = response.data
+    weather_obj = response.data.main
+    weather_fore = response.data.weather[0]
+    coord_obj = response.data.coord
+
+    console.log(weather_obj);
+    console.log(coord_obj);
+
+    // <th>Location</th>
+    // <th>High Celcius</th>
+    // <th>High Kelvin</th>
+    // <th>Low Kelvin</th>
+    // <th>Low Celcius</th>
+    // <th>Forecast Kelvin</th>
+    // <th>Forecast Celcius</th>
+    // <th>Humidity</th>
+    let row = table.insertRow(1);
+    let cell1 = row.insertCell(0);
+    let cell2 = row.insertCell(1);
+    let cell3 = row.insertCell(2);
+    let cell4 = row.insertCell(3);
+    let cell5 = row.insertCell(4);
+    let cell6 = row.insertCell(5);
+    let cell7 = row.insertCell(6);
+    let cell8 = row.insertCell(7);
+    // let cell9 = row.insertCell(6);
+
+    // cell1.innerHTML = "Latitude: "+coord_obj.lat +" Longitude: "+coord_obj.lon;
+    cell1.innerHTML = obj.name;
+
+    cell2.innerHTML = temperatureConverter(weather_obj.temp_max);//Faren
+    cell3.innerHTML = weather_obj.temp_max;//Kelvin
+    cell4.innerHTML = weather_obj.temp_min;//Kelvin
+    cell5.innerHTML = temperatureConverter(weather_obj.temp_min);//Fare
+    cell6.innerHTML = weather_fore.main +" : "+weather_fore.description
+    img.src = "http://openweathermap.org/img/wn/"+weather_fore.icon+"@2x.png";
+    cell7.appendChild(img);//Fare
+    cell8.innerHTML = weather_obj.humidity;
+
+
+
+}
+const get_data = ()=>{
+    let lat = document.getElementById("latId").value;
+    let lon = document.getElementById("lonId").value;
+    req_1(lat,lon)
+}
+const get_loc = async () => {
+    // const response = await axios.get('http://api.ipstack.com/102.219.210.16?access_key=426b8fe91ee44f5c61e10cbced84c93d&format=1')  
+    // 
+    // let lat_obj = response.data.latitude;
+    // let lon_obj = response.data.longitude;
+    // console.log(lat_obj);
+    // console.log(lon_obj);
+    // req_1(lat_obj,lon_obj);
+    // console.log(response);
+    if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(showPositionWeather);
+  } else { 
+    error_msg = "Geolocation is not supported by this browser.";
+  }
+
+ 
+
+
+}
+const getDetailButton = document.querySelector('#submitDet');
+getDetailButton.addEventListener('click', function(event){
+   console.log('Button Clicked');
+   get_data()
+});
+const getLocation = document.querySelector('#getLoc');
+getLocation.addEventListener('click', function(event){
+   console.log('Location Button Clicked');
+//    req() // 
+// req_1()
+get_loc()
+});
+
+function currentTime() {
+  let date = new Date(); 
+  let dd = date.getDate();
+  let dayy = date.getDay();
+  let monthh = date.getMonth();
+//   let fullM = date.getUTCMonth();
+  let yearr = date.getFullYear()
+  let hh = date.getHours();
+  let mm = date.getMinutes();
+  let ss = date.getSeconds();
+  let session = "AM";
+
+  if(hh == 0){
+      hh = 12;
+  }
+  if(hh > 12){
+      hh = hh - 12;
+      session = "PM";
+   }
+
+   hh = (hh < 10) ? "0" + hh : hh;
+   mm = (mm < 10) ? "0" + mm : mm;
+   ss = (ss < 10) ? "0" + ss : ss;
+    
+   let time = hh + ":" + mm + ":" + ss + " " + session;
+   let datTime = "Date: "+dd+"-"+monthh+ "-"+yearr+ "  Time: "+time
+// console.log("Getting date");
+// console.log(fullM);
+  document.getElementById("dateTimeH").innerText = datTime; 
+  let t = setTimeout(function(){ currentTime() }, 1000);
+}
+currentTime();
+
+
+    </script>
+  </body>
+</html>
